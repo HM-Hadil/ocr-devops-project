@@ -23,7 +23,7 @@ Plateforme d'extraction de données par OCR avec architecture conteneurisée.
 
 1. Cloner le repository :
 ```bash
-git clone https://github.com/VOTRE_USERNAME/ocr-devops-project.git
+git clone https://github.com/HM-Hadil/ocr-devops-project.git
 cd ocr-devops-project
 ```
 
@@ -33,10 +33,9 @@ docker-compose up -d
 ```
 
 3. Accéder aux services :
-- **Frontend** : http://localhost:3000
-- **Backend API** : http://localhost:9090
-- **pgAdmin** : http://localhost:8081
-- **OCR Service** : http://localhost:5000
+
+- Backend : http://localhost:9090
+- pgAdmin : http://localhost:8081
 
 ## 📚 Documentation
 
@@ -46,10 +45,10 @@ docker-compose up -d
 
 ## 👥 Équipe
 
-- **Backend** : [@votre-username](https://github.com/votre-username)
-- **Frontend** : [@frontend-dev](https://github.com/frontend-dev)
-- **OCR Service** : [@ocr-dev](https://github.com/ocr-dev)
+- Backend : @HM-Hadil
+- Frontend : (à définir)
+- OCR Service : (à définir)
 
 ## 📄 Licence
 
-MIT License - voir [LICENSE](LICENSE)
+MIT License - voir [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 | docker login ghcr.io -u HM-Hadil --password-stdin](LICENSE)
