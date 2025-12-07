@@ -1,68 +1,83 @@
-version: '3.8'
-
 services:
-  # Base de données PostgreSQL
+  # ═══════════════════════════════════════════════════════
+  # SERVICE 1 : Base de données PostgreSQL
+  # ═══════════════════════════════════════════════════════
   db:
-    image: postgres:16
-    container_name: postgres_db
-    environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
-      POSTGRES_DB: mydb
+    image: postgres:16           # ← Utilise une image toute faite (pas de build)
+    container_name: postgres_db  # ← Nom du conteneur
+    environment:                 # ← Variables de configuration
+      POSTGRES_USER: admin       # ← Nom d'utilisateur
+      POSTGRES_PASSWORD: admin   # ← Mot de passe
+      POSTGRES_DB: mydb          # ← Nom de la base
     ports:
-      - "5432:5432"
+      - "5433:5432"              
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data  # ← Stockage permanent
     networks:
-      - ocr-network
-    healthcheck:
+      - ocr-network              # ← Sur le réseau "ocr-network"
+    healthcheck:                 # ← Vérifier que PostgreSQL est prêt
       test: ["CMD-SHELL", "pg_isready -U admin -d mydb"]
-      interval: 10s
+      interval: 10s              # ← Teste toutes les 10 secondes
       timeout: 5s
       retries: 5
 
-  # pgAdmin pour administration
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
-    ports:
-      - "8081:80"
-    networks:
-      - ocr-network
-    depends_on:
-      - db
-
-  # Backend Spring Boot
+  # ═══════════════════════════════════════════════════════
+  # SERVICE 2 : Backend Spring Boot (VOUS)
+  # ═══════════════════════════════════════════════════════
   backend:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ./backend         # ← Dossier contenant le code
+      dockerfile: Dockerfile     # ← Fichier avec les instructions de build
     container_name: spring_backend
     ports:
-      - "9090:9090"
+      - "9090:9090"              # ← Votre API accessible sur localhost:9090
     depends_on:
       db:
-        condition: service_healthy
+        condition: service_healthy  # ← Attend que PostgreSQL soit prêt
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/mydb
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/mydb  # ← "db" = nom du service PostgreSQL
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: admin
-      SERVER_PORT: 9090
-    volumes:
-      - uploads_data:/tmp/uploads
     networks:
       - ocr-network
-    restart: unless-stopped
 
+  # ═══════════════════════════════════════════════════════
+  # SERVICE 3 : Frontend React
+  # ═══════════════════════════════════════════════════════
+  frontend:
+    build:
+      context: ./Front_End       # ← Dossier du code frontend
+      dockerfile: Dockerfile
+    container_name: react_frontend
+    ports:
+      - "3000:3000"              # ← Interface accessible sur localhost:3000
+    depends_on:
+      - backend                  # ← Démarre après le backend
+    networks:
+      - ocr-network
+
+  # ═══════════════════════════════════════════════════════
+  # SERVICE 4 : Service IA Python
+  # ═══════════════════════════════════════════════════════
+  ia-service:
+    build:
+      context: ./IA-service      # ← Dossier du code IA
+      dockerfile: Dockerfile
+    container_name: ocr_python
+    ports:
+      - "5000:5000"              # ← API OCR accessible sur localhost:5000
+    networks:
+      - ocr-network
+
+# ═══════════════════════════════════════════════════════
+# VOLUMES : Stockage permanent
+# ═══════════════════════════════════════════════════════
 volumes:
-  postgres_data:
-    driver: local
-  uploads_data:
-    driver: local
+  postgres_data:                 # ← Les données PostgreSQL survivent aux redémarrages
 
+# ═══════════════════════════════════════════════════════
+# NETWORKS : Réseau virtuel pour que les services communiquent
+# ═══════════════════════════════════════════════════════
 networks:
   ocr-network:
-    driver: bridge
+    driver: bridge               # ← Type de réseau (comme un switch virtuel)
