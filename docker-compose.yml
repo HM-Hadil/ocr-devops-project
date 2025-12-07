@@ -50,7 +50,7 @@ services:
       dockerfile: Dockerfile
     container_name: react_frontend
     ports:
-      - "3000:3000"              # ← Interface accessible sur localhost:3000
+      - "3000:5173"             # ← Interface accessible sur localhost:3000
     depends_on:
       - backend                  # ← Démarre après le backend
     networks:
@@ -65,7 +65,7 @@ services:
       dockerfile: Dockerfile
     container_name: ocr_python
     ports:
-      - "5000:5000"              # ← API OCR accessible sur localhost:5000
+      - "5000:8001"               # ← API OCR accessible sur localhost:5000
     networks:
       - ocr-network
 
