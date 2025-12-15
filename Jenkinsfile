@@ -22,8 +22,10 @@ pipeline {
                 echo '🔨 Compiling Spring Boot backend...'
                 echo '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'
                 dir('backend') {
+                    sh '''
                     chmod +x mvnw
                     sh './mvnw clean package -DskipTests'
+                    '''
                 }
             }
         }
